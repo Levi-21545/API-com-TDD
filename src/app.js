@@ -1,5 +1,9 @@
 const app = require('express')();
-app.use(require('express').json());
+const consign = require('consign');
+
+consign({ verbose: false })
+  .include('/src/config/middlewares.js')
+  .into(app);
 
 app.get('/users', (req, res) => {
   const users = [{ name: 'John Doe', mail: 'john@mail.com' }];
