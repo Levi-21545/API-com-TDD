@@ -1,0 +1,24 @@
+{
+  "name": "api-com-tdd-com-wagner-costa",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "jest",
+    "secure-mode": "jest --watchAll --verbose=true"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@eslint/js": "^9.7.0",
+    "eslint": "^9.7.0",
+    "globals": "^15.8.0",
+    "jest": "^23.6.0",
+    "supertest": "3.3.0"
+  },
+  "dependencies": {
+    "express": "4.16.4"
+  }
+}
