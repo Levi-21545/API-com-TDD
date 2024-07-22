@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node src/server.js",
     "test": "jest",
-    "secure-mode": "jest --watchAll --verbose=true"
+    "secure-mode": "jest --watchAll --verbose=false"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +22,7 @@
     "consign": "^0.1.6",
     "express": "4.16.4",
     "knex": "3.1.0",
+    "knex-logger": "^0.1.0",
     "pg": "^8.11.3",
     "util": "^0.12.5"
   }
