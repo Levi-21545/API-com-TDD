@@ -10,7 +10,7 @@ global.TextDecoder = util.TextDecoder;
 
 app.db = knex(knexfile.test);
 
-app.use(knexLogger(app.db));
+//app.use(knexLogger(app.db));
 
 consign({ cwd: 'src', verbose: false })
   .include('./config/middlewares.js')
