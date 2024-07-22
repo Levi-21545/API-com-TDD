@@ -10,6 +10,6 @@ module.exports = {
     migrations: {
       directory: 'src/migrations'
     },
-    debug: true
+    debug: false
   }
 };
