@@ -17,9 +17,25 @@ module.exports = (app) => {
     res.status(201).json(result[0]);
   };
 
+  const update = async (req, res) => {
+    app.services.account
+      .update(req.params.id, req.body)
+      .then((result) => {
+        res.status(200).json(result[0]);
+      });
+  };
+
+  const remove = async (req, res) => {
+    app.services.account
+      .remove(req.params.id)
+      .then(() => res.status(204).send());
+  };
+
   return {
     findAll,
     findById,
-    create
+    create,
+    update,
+    remove
   };
 };
