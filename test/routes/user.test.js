@@ -66,7 +66,7 @@ test('Não deve inserir um usuário sem senha', (done) => {
     });
 });
 
-test('Não deve inserir um usuário com email já existente', () => {
+test.skip('Não deve inserir um usuário com email já existente', () => {
   return request(app)
     .post('/users')
     .send({

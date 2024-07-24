@@ -1,5 +1,6 @@
 const request = require('supertest');
 const app = require('../../src/app');
+const ValidationError = require('../../src/errors/ValidationError');
 
 const MAIN_ROUTE = '/accounts';
 let user;
@@ -23,6 +24,20 @@ test('Deve criar uma nova conta com sucesso', async () => {
     });
 });
 
+test('Não deve inserir uma conta sem nome', async () => {
+  return request(app)
+    .post(MAIN_ROUTE)
+    .send({ user_id: user.id })
+    .then((result) => {
+      expect(result.status).toBe(400);
+      expect(result.body.error).toBe(
+        'Nome é um atributo obrigatório'
+      );
+    });
+});
+
+test.skip('Não deve inserir uma conta de nome duplicado para o mesmo usuário', () => {});
+
 test('Deve listar todas as contas', async () => {
   return app
     .db('accounts')
@@ -36,6 +51,8 @@ test('Deve listar todas as contas', async () => {
         });
     });
 });
+
+test.skip('Deve listar apenas as contas do usuário', () => {});
 
 test('Deve retornar uma conta por ID', () => {
   return app
@@ -52,6 +69,8 @@ test('Deve retornar uma conta por ID', () => {
     });
 });
 
+test.skip('Não deve retornar uma conta de outro usuário', () => {});
+
 test('Deve alterar uma conta', () => {
   return app
     .db('accounts')
@@ -67,6 +86,8 @@ test('Deve alterar uma conta', () => {
     });
 });
 
+test.skip('Não deve alterar uma conta de outro usuário', () => {});
+
 test('Deve remover uma conta', () => {
   return app
     .db('accounts')
@@ -76,3 +97,5 @@ test('Deve remover uma conta', () => {
       expect(res.status).toBe(204);
     });
 });
+
+test.skip('Não deve remover a conta de outro usuário', () => {});

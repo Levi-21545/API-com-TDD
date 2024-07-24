@@ -1,3 +1,5 @@
+const ValidationError = require('../errors/ValidationError');
+
 module.exports = (app) => {
   const findAll = (filter = {}) => {
     return app.db('users').where(filter).select();
@@ -5,11 +7,12 @@ module.exports = (app) => {
 
   const save = async (user) => {
     if (!user.name)
-      return { error: 'Nome é um atributo obrigatório' };
+      throw new ValidationError('Nome é um atributo obrigatório');
     if (!user.email)
-      return { error: 'Email é um atributo obrigatório' };
+      throw new ValidationError('Email é um atributo obrigatório');
+
     if (!user.passwd)
-      return { error: 'Senha é um atributo obrigatório' };
+      throw new ValidationError('Senha é um atributo obrigatório');
 
     const userDb = await findAll({ email: user.email });
 
