@@ -23,6 +23,28 @@ test('Deve inserir um usuário com sucesso', () => {
     .then((res) => {
       expect(res.status).toBe(201);
       expect(res.body.name).toBe('Heinsenberg');
+      expect(res.body).not.toHaveProperty('passwd');
+    });
+});
+
+test('Deve armazenar senha criptografada', async () => {
+  return request(app)
+    .post('/users')
+    .send({
+      name: 'Heinsenberg',
+      email: `${Date.now()}@mail.com`,
+      passwd: '123456'
+    })
+    .then(async (res) => {
+      expect(res.status).toBe(201);
+      
+      const { id } = res.body;
+      expect(res.body.id).not.toBeUndefined();
+
+      const usrDB = await app.services.user.findOne({ id });
+
+      expect(usrDB.passwd).not.toBeUndefined();
+      expect(usrDB.passwd).not.toBe('123456');
     });
 });
 
@@ -66,12 +88,12 @@ test('Não deve inserir um usuário sem senha', (done) => {
     });
 });
 
-test.skip('Não deve inserir um usuário com email já existente', () => {
+test('Não deve inserir um usuário com email já existente', async () => {
   return request(app)
     .post('/users')
     .send({
       name: 'Heinsenberg',
-      email,
+      email: 'walterwhite@gmail.com',
       passwd: '123456'
     })
     .then((res) => {
