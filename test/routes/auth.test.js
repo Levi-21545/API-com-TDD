@@ -70,7 +70,7 @@ test('Não deve autenticar usuário com usuário inexistente', () => {
 
 test('Não deve acessar uma rota protegida sem token', () => {
   return request(app)
-    .get('/users')
+    .get('/v1/users')
     .then((res) => {
       expect(res.status).toBe(401);
     });

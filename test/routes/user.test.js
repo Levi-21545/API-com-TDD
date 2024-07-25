@@ -2,6 +2,7 @@ const request = require('supertest');
 const app = require('../../src/app');
 const jwt = require('jwt-simple');
 
+const MAIN_ROUTE = '/v1/users';
 const email = `${Date.now()}@mail.com`;
 
 let user;
@@ -18,7 +19,7 @@ beforeAll(async () => {
 
 test('Deve listar todos os usuários', () => {
   return request(app)
-    .get('/users')
+    .get(`${MAIN_ROUTE}`)
     .set('authorization', `bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(200);
@@ -28,7 +29,7 @@ test('Deve listar todos os usuários', () => {
 
 test('Deve inserir um usuário com sucesso', () => {
   return request(app)
-    .post('/users')
+    .post(`${MAIN_ROUTE}`)
     .send({
       name: 'Heinsenberg',
       email,
@@ -44,7 +45,7 @@ test('Deve inserir um usuário com sucesso', () => {
 
 test('Deve armazenar senha criptografada', async () => {
   return request(app)
-    .post('/users')
+    .post(`${MAIN_ROUTE}`)
     .send({
       name: 'Heinsenberg',
       email: `${Date.now()}@mail.com`,
@@ -68,7 +69,7 @@ test('Não deve inserir usuário sem nome', () => {
   const email = `${Date.now()}@mail.com`;
 
   return request(app)
-    .post('/users')
+    .post(`${MAIN_ROUTE}`)
     .send({
       email,
       passwd: '123456'
@@ -82,7 +83,7 @@ test('Não deve inserir usuário sem nome', () => {
 
 test('Não deve inserir usuário sem email', async () => {
   const result = await request(app)
-    .post('/users')
+    .post(`${MAIN_ROUTE}`)
     .send({
       name: 'Heinsenberg',
       passwd: '123456'
@@ -96,7 +97,7 @@ test('Não deve inserir um usuário sem senha', (done) => {
   const email = `${Date.now()}@mail.com`;
 
   request(app)
-    .post('/users')
+    .post(`${MAIN_ROUTE}`)
     .send({
       name: 'Heinsenberg',
       email
@@ -111,7 +112,7 @@ test('Não deve inserir um usuário sem senha', (done) => {
 
 test('Não deve inserir um usuário com email já existente', async () => {
   return request(app)
-    .post('/users')
+    .post(`${MAIN_ROUTE}`)
     .send({
       name: 'Heinsenberg',
       email: 'walterwhite@gmail.com',
