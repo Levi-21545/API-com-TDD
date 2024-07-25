@@ -1,3 +1,4 @@
+const express = require('express');
 const jwt = require('jwt-simple');
 const bcrypt = require('bcrypt-nodejs');
 const ValidationError = require('../errors/ValidationError');
@@ -5,7 +6,9 @@ const ValidationError = require('../errors/ValidationError');
 const secret = 'Segredinho dos crias';
 
 module.exports = (app) => {
-  const signin = (req, res, next) => {
+  const router = express.Router();
+
+  router.post('/signin', (req, res, next) => {
     app.services.user
       .findOne({ email: req.body.mail })
       .then((user) => {
@@ -26,7 +29,16 @@ module.exports = (app) => {
           throw new ValidationError('Usuário ou senha incorretos');
       })
       .catch((err) => next(err));
-  };
+  });
 
-  return { signin };
+  router.post('/signup', async (req, res, next) => {
+    app.services.user
+      .save(req.body)
+      .then((result) => {
+        return res.status(201).json(result[0]);
+      })
+      .catch((err) => next(err));
+  });
+
+  return router;
 };
