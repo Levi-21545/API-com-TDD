@@ -10,6 +10,19 @@ module.exports = (app) => {
       .catch((err) => next(err));
   });
 
+  router.get('/:id', (req, res, next) => {
+    app.services.transaction
+      .findOne({ id: req.params.id })
+      .then((transaction) => {
+        if (transaction) {
+          res.status(200).json(transaction);
+        } else {
+          res.status(404).json({ error: 'Transação não encontrada' });
+        }
+      })
+      .catch((err) => next(err));
+  });
+
   router.post('/', (req, res, next) => {
     app.services.transaction
       .save(req.body)
