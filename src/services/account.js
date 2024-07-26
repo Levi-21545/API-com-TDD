@@ -22,13 +22,10 @@ module.exports = (app) => {
       user_id: account.user_id
     });
 
-    if (accDb)
-      throw new ValidationError('Já existe uma conta com este nome');
+    if (accDb) throw new ValidationError('Já existe uma conta com este nome');
 
     if (!account.user_id)
-      throw new ValidationError(
-        'O id do usuário é um atributo obrigatório'
-      );
+      throw new ValidationError('O id do usuário é um atributo obrigatório');
 
     return app.db('accounts').insert(account, '*');
   };
@@ -37,7 +34,12 @@ module.exports = (app) => {
     return app.db('accounts').where({ id }).update(account, '*');
   };
 
-  const remove = (id) => {
+  const remove = async (id) => {
+    const transaction = await app.services.transaction.findOne({ acc_id: id });
+
+    if (transaction)
+      throw new ValidationError('Esta conta possui transações associadas');
+
     return app.db('accounts').where({ id }).del();
   };
 

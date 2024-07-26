@@ -16,14 +16,12 @@ beforeAll(async () => {
       {
         name: 'User 1',
         email: 'user@mail.com',
-        passwd:
-          '$10$xbbE6iTN6Dfu5Hz3WY5ONuifHkoOVcWBoGONX8SUbv3NIxIiWdmcq'
+        passwd: '$10$xbbE6iTN6Dfu5Hz3WY5ONuifHkoOVcWBoGONX8SUbv3NIxIiWdmcq'
       },
       {
         name: 'User 2',
         email: 'user2@mail.com',
-        passwd:
-          '$10$xbbE6iTN6Dfu5Hz3WY5ONuifHkoOVcWBoGONX8SUbv3NIxIiWdmcq'
+        passwd: '$10$xbbE6iTN6Dfu5Hz3WY5ONuifHkoOVcWBoGONX8SUbv3NIxIiWdmcq'
       }
     ],
     '*'
@@ -156,25 +154,16 @@ describe('Ao tentar inserir uma transação inválida', () => {
   };
 
   test('Não deve inserir sem descrição', () =>
-    testTemplate(
-      { description: null },
-      'Descrição é um atributo obrigatório'
-    ));
+    testTemplate({ description: null }, 'Descrição é um atributo obrigatório'));
 
   test('Não deve inserir sem valor', () =>
-    testTemplate(
-      { ammount: null },
-      'Valor é um atributo obrigatório'
-    ));
+    testTemplate({ ammount: null }, 'Valor é um atributo obrigatório'));
 
   test('Não deve inserir sem data', () =>
     testTemplate({ date: null }, 'Data é um atributo obrigatório'));
 
   test('Não deve inserir sem conta', () =>
-    testTemplate(
-      { acc_id: null },
-      'O ID da conta é um atributo obrigatório'
-    ));
+    testTemplate({ acc_id: null }, 'O ID da conta é um atributo obrigatório'));
 
   test('Não deve inserir sem tipo', () =>
     testTemplate({ type: null }, 'Tipo é um atributo obrigatório'));
@@ -281,8 +270,32 @@ test('Não deve remover uma transação de outro usuário', () => {
         .set('authorization', `bearer ${user.token}`)
         .then((res) => {
           expect(res.status).toBe(403);
+          expect(res.body.error).toBe('Este recurso não pertence ao usuário');
+        })
+    );
+});
+
+test('Não deve remover conta com transação', () => {
+  return app
+    .db('transactions')
+    .insert(
+      {
+        description: 'To delete',
+        date: new Date(),
+        ammount: 100,
+        type: 'I',
+        acc_id: accUser.id
+      },
+      ['id']
+    )
+    .then(() =>
+      request(app)
+        .delete(`/v1/accounts/${accUser.id}`)
+        .set('authorization', `bearer ${user.token}`)
+        .then((res) => {
+          expect(res.status).toBe(400);
           expect(res.body.error).toBe(
-            'Este recurso não pertence ao usuário'
+            'Esta conta possui transações associadas'
           );
         })
     );
