@@ -111,18 +111,25 @@ test('Não deve inserir um usuário sem senha', (done) => {
 });
 
 test('Não deve inserir um usuário com email já existente', async () => {
-  return request(app)
-    .post(`${MAIN_ROUTE}`)
-    .send({
+  return app
+    .db('users')
+    .insert({
       name: 'Heinsenberg',
-      email: 'walterwhite@gmail.com',
+      email: `waltin@gmail.com`,
       passwd: '123456'
     })
-    .set('authorization', `bearer ${user.token}`)
-    .then((res) => {
-      expect(res.status).toBe(400);
-      expect(res.body.error).toBe(
-        'Já existe um usuário com este email'
-      );
-    });
+    .then(() =>
+      request(app)
+        .post(`${MAIN_ROUTE}`)
+        .send({
+          name: 'Heinsenberg',
+          email: 'waltin@gmail.com',
+          passwd: '123456'
+        })
+        .set('authorization', `bearer ${user.token}`)
+        .then((res) => {
+          expect(res.status).toBe(400);
+          expect(res.body.error).toBe('Já existe um usuário com este email');
+        })
+    );
 });
