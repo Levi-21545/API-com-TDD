@@ -1,8 +1,8 @@
 const ValidationError = require('../errors/ValidationError');
 
 module.exports = (app) => {
-  const findAll = (filter = {}) => {
-    return app.db('accounts').where(filter).select();
+  const findAll = (user_id) => {
+    return app.db('accounts').where({ user_id }).select();
   };
 
   const findById = (filter = {}) => {
