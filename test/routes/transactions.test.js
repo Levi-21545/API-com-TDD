@@ -110,11 +110,11 @@ test('Transações de entrada devem ser positivas', () => {
     .then((res) => {
       expect(res.status).toBe(201);
       expect(res.body.acc_id).toBe(accUser.id);
-      expect(res.body.ammount).toBe('100.00')
+      expect(res.body.ammount).toBe('100.00');
     });
 });
 
-test('Transações de sapida devem ser negativas', () => {
+test('Transações de saída devem ser negativas', () => {
   return request(app)
     .post(MAIN_ROUTE)
     .set('authorization', `bearer ${user.token}`)
@@ -128,8 +128,59 @@ test('Transações de sapida devem ser negativas', () => {
     .then((res) => {
       expect(res.status).toBe(201);
       expect(res.body.acc_id).toBe(accUser.id);
-      expect(res.body.ammount).toBe('-100.00')
+      expect(res.body.ammount).toBe('-100.00');
     });
+});
+
+describe('Ao tentar inserir uma transação inválida', () => {
+  let validTransaction;
+  beforeAll(() => {
+    validTransaction = {
+      description: 'New T',
+      date: new Date(),
+      ammount: 100,
+      type: 'I',
+      acc_id: accUser.id
+    };
+  });
+
+  const testTemplate = (newData, errorMessage) => {
+    return request(app)
+      .post(MAIN_ROUTE)
+      .set('authorization', `bearer ${user.token}`)
+      .send({ ...validTransaction, ...newData })
+      .then((res) => {
+        expect(res.status).toBe(400);
+        expect(res.body.error).toBe(errorMessage);
+      });
+  };
+
+  test('Não deve inserir sem descrição', () =>
+    testTemplate(
+      { description: null },
+      'Descrição é um atributo obrigatório'
+    ));
+
+  test('Não deve inserir sem valor', () =>
+    testTemplate(
+      { ammount: null },
+      'Valor é um atributo obrigatório'
+    ));
+
+  test('Não deve inserir sem data', () =>
+    testTemplate({ date: null }, 'Data é um atributo obrigatório'));
+
+  test('Não deve inserir sem conta', () =>
+    testTemplate(
+      { acc_id: null },
+      'O ID da conta é um atributo obrigatório'
+    ));
+
+  test('Não deve inserir sem tipo', () =>
+    testTemplate({ type: null }, 'Tipo é um atributo obrigatório'));
+
+  test('Não deve inserir uma transação com tipo inválido', () =>
+    testTemplate({ type: 'A' }, 'Tipo inválido'));
 });
 
 test('Deve retornar uma transação por ID', () => {
