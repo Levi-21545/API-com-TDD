@@ -59,7 +59,6 @@ test('Não deve inserir uma conta sem nome', async () => {
     .post(MAIN_ROUTE)
     .send({})
     .set('authorization', `bearer ${user.token}`)
-
     .then((result) => {
       expect(result.status).toBe(400);
       expect(result.body.error).toBe(
@@ -68,7 +67,23 @@ test('Não deve inserir uma conta sem nome', async () => {
     });
 });
 
-test.skip('Não deve inserir uma conta de nome duplicado para o mesmo usuário', () => {});
+test('Não deve inserir uma conta de nome duplicado para o mesmo usuário', () => {
+  return app
+    .db('accounts')
+    .insert({ name: 'Acc duplicada', user_id: user.id })
+    .then(() =>
+      request(app)
+        .post(MAIN_ROUTE)
+        .set('authorization', `bearer ${user.token}`)
+        .send({ name: 'Acc duplicada' })
+        .then((res) => {
+          expect(res.status).toBe(400);
+          expect(res.body.error).toBe(
+            'Já existe uma conta com este nome'
+          );
+        })
+    );
+});
 
 test('Deve retornar uma conta por ID', () => {
   return app

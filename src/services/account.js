@@ -9,9 +9,21 @@ module.exports = (app) => {
     return app.db('accounts').where(filter).first();
   };
 
+  const find = (filter = {}) => {
+    return app.db('accounts').where(filter).first();
+  };
+
   const save = async (account) => {
     if (!account.name)
       throw new ValidationError('Nome é um atributo obrigatório');
+
+    const accDb = await find({
+      name: account.name,
+      user_id: account.user_id
+    });
+
+    if (accDb)
+      throw new ValidationError('Já existe uma conta com este nome');
 
     if (!account.user_id)
       throw new ValidationError(
