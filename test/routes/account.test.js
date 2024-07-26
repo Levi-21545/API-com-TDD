@@ -23,7 +23,10 @@ beforeAll(async () => {
   user2 = { ...res2[0] };
 });
 
-test('Deve listar apenas as contas do usuário', () => {
+test('Deve listar apenas as contas do usuário', async () => {
+  await app.db('transactions').del();
+  await app.db('accounts').del();
+  
   return app
     .db('accounts')
     .insert([
@@ -61,9 +64,7 @@ test('Não deve inserir uma conta sem nome', async () => {
     .set('authorization', `bearer ${user.token}`)
     .then((result) => {
       expect(result.status).toBe(400);
-      expect(result.body.error).toBe(
-        'Nome é um atributo obrigatório'
-      );
+      expect(result.body.error).toBe('Nome é um atributo obrigatório');
     });
 });
 
@@ -78,9 +79,7 @@ test('Não deve inserir uma conta de nome duplicado para o mesmo usuário', () =
         .send({ name: 'Acc duplicada' })
         .then((res) => {
           expect(res.status).toBe(400);
-          expect(res.body.error).toBe(
-            'Já existe uma conta com este nome'
-          );
+          expect(res.body.error).toBe('Já existe uma conta com este nome');
         })
     );
 });
@@ -111,9 +110,7 @@ test('Não deve retornar uma conta de outro usuário', () => {
         .set('authorization', `bearer ${user.token}`)
         .then((res) => {
           expect(res.status).toBe(403);
-          expect(res.body.error).toBe(
-            'Este recurso não pertence ao usuário'
-          );
+          expect(res.body.error).toBe('Este recurso não pertence ao usuário');
         });
     });
 });
@@ -145,9 +142,7 @@ test('Não deve alterar ou remover uma conta de outro usuário', () => {
         .set('authorization', `bearer ${user.token}`)
         .then((res) => {
           expect(res.status).toBe(403);
-          expect(res.body.error).toBe(
-            'Este recurso não pertence ao usuário'
-          );
+          expect(res.body.error).toBe('Este recurso não pertence ao usuário');
         });
     });
 });
@@ -162,9 +157,7 @@ test('Não deve alterar ou remover uma conta de outro usuário', () => {
         .set('authorization', `bearer ${user.token}`)
         .then((res) => {
           expect(res.status).toBe(403);
-          expect(res.body.error).toBe(
-            'Este recurso não pertence ao usuário'
-          );
+          expect(res.body.error).toBe('Este recurso não pertence ao usuário');
         });
     });
 });
